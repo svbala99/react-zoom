@@ -50,4 +50,27 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
   </body>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBe786TIOpXA2ARmT829MpxEOK82b81AZo",
+    authDomain: "react-zoom.firebaseapp.com",
+    projectId: "react-zoom",
+    storageBucket: "react-zoom.appspot.com",
+    messagingSenderId: "181092696047",
+    appId: "1:181092696047:web:ab5cd529d0533d42d0001a",
+    measurementId: "G-SP4C33PWDK"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 </html>
