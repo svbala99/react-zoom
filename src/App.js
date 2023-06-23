@@ -4,6 +4,8 @@ import React from "react";
 import { ZoomMtg } from "@zoomus/websdk";
 
 ZoomMtg.setZoomJSLib("https://source.zoom.us/2.13.0/lib", "/av");
+// ZoomMtg.setZoomJSLib("node_modules/@zoomus/websdk/dist/lib", "/av");
+
 ZoomMtg.preLoadWasm();
 ZoomMtg.prepareWebSDK();
 ZoomMtg.i18n.load("en-US");
@@ -23,7 +25,7 @@ const App = () => {
   // handled at react native side - would be passed from React native to React
   const meetingNumber = 99488065055;
   const passWord = "imn6YJ";
-  const userName = "Bala Test";
+  const userName = "Test User";
   const userEmail = "svbala99@gmail.com";
 
   /**
@@ -41,13 +43,13 @@ const App = () => {
       // meetingNumber and role are must.
       // role 0 means attendee, 1 stands for host
       const responseFromSignatureEndpoint = await fetch(
-        "http://localhost:4000",
+        "https://zoomsdk-sign-generator-express.onrender.com",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            meetingNumber: meetingNumber,
-            role: role,
+            meetingNumber,
+            role,
           }),
         }
       );
