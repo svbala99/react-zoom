@@ -114,16 +114,23 @@ const App = () => {
       navProps: {},
       text: "Msg from PWA to RN, msg type is SCREEN",
     };
-    const eventTypeMsg = {
-      type: "event",
-      eventName: "MEETING_STATUS_INMEETING",
-      eventProps: {},
-      text: "Msg from PWA to RN, msg type is EVENT",
-    };
-    const backTypeMsg = {
-      type: "back",
-      text: "Msg from PWA to RN, msg type is BACK",
-    };
+
+    // Type 1: send "MEETING_STATUS" when you get the event from ZoomMtg.onMeetingStatusChange()
+    // Type 2: send "MEETING_JOINED" when you get callback in ZoomMtg after successfully joined
+    // *****************************
+    // const eventTypeMsg = {
+    //   type: "event",
+    //   eventProps : {
+    //     name : 'MEETING_STATUS' || 'MEETING_JOINED',
+    //     ...eventProps
+    //   },
+    //   text: "Msg from PWA to RN, msg type is EVENT",
+    // };
+
+
+    // const backTypeMsg = {
+    //   type: "back",
+    // };
 
     window?.ReactNativeWebView?.postMessage(JSON.stringify(screenTypeMsg));
   };
