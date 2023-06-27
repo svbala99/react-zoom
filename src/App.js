@@ -135,6 +135,7 @@ const App = () => {
   const sendMsg_MeetingJoined_Connected = () => {
     const msg_1 = {
       type: "event",
+      key:1,
       eventProps: {
         message: "joinedZoom",
         data: {
@@ -153,6 +154,7 @@ const App = () => {
   const sendMsg_MeetingJoined_Connecting = () => {
     const msg_2 = {
       type: "event",
+      key:2,
       eventProps: {
         message: "joinedZoom",
         data: {
@@ -171,6 +173,7 @@ const App = () => {
   const sendMsg_MeetingJoined_Disconnected = () => {
     const msg_3 = {
       type: "event",
+      key:3,
       eventProps: {
         message: "joinedZoom",
         data: {
@@ -189,6 +192,7 @@ const App = () => {
   const sendMsg_MeetingJoined_Reconnecting = () => {
     const msg_4 = {
       type: "event",
+      key:4,
       eventProps: {
         message: "joinedZoom",
         data: {
@@ -207,6 +211,7 @@ const App = () => {
   const sendMsg_MeetingJoined_Waiting = () => {
     const msg_5 = {
       type: "event",
+      key:5,
       eventProps: {
         message: "joinedZoom",
         data: {
@@ -227,6 +232,7 @@ const App = () => {
   const sendMsg_MeetingJoin_Error = (errorMessage = "") => {
     const msg_6 = {
       type: "event",
+      key:6,
       eventProps: {
         message: "errorZoom",
         data: {
@@ -244,6 +250,7 @@ const App = () => {
   const sendMsg_MeetingLeave_Success = () => {
     const msg_7 = {
       type: "event",
+      key:7,
       eventProps: {
         message: "leaveZoom",
         data: {
