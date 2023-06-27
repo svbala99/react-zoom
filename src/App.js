@@ -100,9 +100,14 @@ const App = () => {
     });
   };
 
-  // (7) ==> ZoomMtg.inMeetingServiceListener("onUserLeave", function (data) {
-  //   console.log(data);
-  // });
+ // In Use effect()====>  if(e.data?.type="LEAVE_MEETING"){
+      //   ZoomMtg.leaveMeeting({
+      //     confirm:true,
+      //     success:()=>{
+      //       sendMsg_MeetingLeave_Success();
+      //     }
+      //   })
+      // }
 
   // (6) ==> ZoomMtg.join(
   // ...
@@ -257,6 +262,14 @@ const App = () => {
   useEffect(() => {
     const messageListener = document.addEventListener("message", (e) => {
       alert(JSON.stringify(e?.data));
+      if(e.data?.type="LEAVE_MEETING"){
+        ZoomMtg.leaveMeeting({
+          confirm:true,
+          success:()=>{
+            sendMsg_MeetingLeave_Success();
+          }
+        })
+      }
     });
     return messageListener;
   }, []);
