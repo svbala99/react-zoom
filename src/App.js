@@ -102,8 +102,30 @@ const App = () => {
     });
   };
 
-  const sendMessage = () => {
-    window?.ReactNativeWebView?.postMessage("Hi from PWA");
+  /**
+   * @function sendMessageToReactNative
+   * @description send any msg such as event to be fired -- to RN
+   */
+  const sendMessageToReactNative = () => {
+    // there are two types of msgs - can be sent from here to RN : screen, event, back
+    const screenTypeMsg = {
+      type: "screen",
+      navigateTo: "home",
+      navProps: {},
+      text: "Msg from PWA to RN, msg type is SCREEN",
+    };
+    const eventTypeMsg = {
+      type: "event",
+      eventName: "MEETING_STATUS_INMEETING",
+      eventProps: {},
+      text: "Msg from PWA to RN, msg type is EVENT",
+    };
+    const backTypeMsg = {
+      type: "back",
+      text: "Msg from PWA to RN, msg type is BACK",
+    };
+
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(screenTypeMsg));
   };
 
   /**
@@ -117,12 +139,14 @@ const App = () => {
     });
     return messageListener;
   }, []);
-  
+
   return (
     <div className="App">
       <main>
         <h1>Zoom Meeting SDK Sample React</h1>
-        <button onClick={sendMessage}>Say Hi to React native</button>
+        <button onClick={sendMessageToReactNative}>
+          Say Hi to React native
+        </button>
         <button onClick={getSignature}>Join Meeting</button>
       </main>
     </div>
