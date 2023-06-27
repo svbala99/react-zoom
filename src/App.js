@@ -1,10 +1,10 @@
 import "./App.css";
 
-import React from "react";
+import React, { useEffect } from "react";
+
 import { ZoomMtg } from "@zoomus/websdk";
 
 ZoomMtg.setZoomJSLib("https://source.zoom.us/2.13.0/lib", "/av");
-// ZoomMtg.setZoomJSLib("node_modules/@zoomus/websdk/dist/lib", "/av");
 
 ZoomMtg.preLoadWasm();
 ZoomMtg.prepareWebSDK();
@@ -23,6 +23,7 @@ const App = () => {
   const leaveUrl = "https://zoom.us";
 
   // handled at react native side - would be passed from React native to React
+  // you can delete these after you receive all these from react native
   const meetingNumber = 99488065055;
   const passWord = "imn6YJ";
   const userName = "Test User";
@@ -101,10 +102,27 @@ const App = () => {
     });
   };
 
+  const sendMessage = () => {
+    window?.ReactNativeWebView?.postMessage("Hi from PWA");
+  };
+
+  /**
+   * @function useEffect
+   * @description to handle the listener to receive msg from React native
+   * @description PWA developers can receive this e.data and utilize it wherever required
+   */
+  useEffect(() => {
+    const messageListener = document.addEventListener("message", (e) => {
+      alert(JSON.stringify(e?.data));
+    });
+    return messageListener;
+  }, []);
+  
   return (
     <div className="App">
       <main>
         <h1>Zoom Meeting SDK Sample React</h1>
+        <button onClick={sendMessage}>Say Hi to React native</button>
         <button onClick={getSignature}>Join Meeting</button>
       </main>
     </div>
