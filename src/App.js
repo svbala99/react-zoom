@@ -75,12 +75,10 @@ const App = () => {
     document.getElementById("zmmtg-root").style.display = "block";
 
     // make init() from zoomSDK
-    // pass success and error callbacks for init() and join()
     // all fields are mandatory
     ZoomMtg.init({
       leaveUrl,
-      success: (success) => {
-        //   console.log("============= Zoom init success",success)
+      success: () => {
         ZoomMtg.join({
           signature,
           sdkKey,
@@ -91,9 +89,9 @@ const App = () => {
           // success: (success) => {
           //   console.log("============= Zoom join success",success)
           // },
-          // error: (error) => {
-          //   console.log("============= Zoom join error", error);
-          // }
+          error: (errorMsg) => {
+            sendMsg_MeetingJoin_Error(JSON.stringify(errorMsg));
+          }
         });
       },
       // error: (error) => {
@@ -102,37 +100,153 @@ const App = () => {
     });
   };
 
+  // (7) ==> ZoomMtg.inMeetingServiceListener("onUserLeave", function (data) {
+  //   console.log(data);
+  // });
+
+  // (6) ==> ZoomMtg.join(
+  // ...
+  // error : ()=>{
+  // write logic here
+  // }
+  // )
+
+  // (5) ==>  ZoomMtg.inMeetingServiceListener("onUserIsInWaitingRoom", function (data) {
+  //   console.log("USER IN WAITING ROOM!");
+  //   console.log(data);
+  // });
+
+  // (1,2,3,4) ==> ZoomMtg.inMeetingServiceListener("onMeetingStatus", function (data) {
+  //   // {status: 1(connecting), 2(connected), 3(disconnected), 4(reconnecting)}
+  //   console.log(data);
+  // });
+
+  // 7. leave success, meeting ended
+
   /**
-   * @function sendMessageToReactNative
-   * @description send any msg such as event to be fired -- to RN
+   * @function sendMsg_MeetingJoined_Connected
+   * @description 1. Join success, "connected" to meeting
    */
-  const sendMessageToReactNative = () => {
-    // there are two types of msgs - can be sent from here to RN : screen, event, back
-    const screenTypeMsg = {
-      type: "screen",
-      navigateTo: "home",
-      navProps: {},
-      text: "Msg from PWA to RN, msg type is SCREEN",
+  const sendMsg_MeetingJoined_Connected = () => {
+    const msg_1 = {
+      type: "event",
+      eventProps: {
+        message: "joinedZoom",
+        data: {
+          meetingNumber,
+          meetingStatus: "connected",
+        },
+      },
     };
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(msg_1));
+  };
 
-    // Type 1: send "MEETING_STATUS" when you get the event from ZoomMtg.onMeetingStatusChange()
-    // Type 2: send "MEETING_JOINED" when you get callback in ZoomMtg after successfully joined
-    // *****************************
-    // const eventTypeMsg = {
-    //   type: "event",
-    //   eventProps : {
-    //     name : 'MEETING_STATUS' || 'MEETING_JOINED',
-    //     ...eventProps
-    //   },
-    //   text: "Msg from PWA to RN, msg type is EVENT",
-    // };
+  /**
+   * @function sendMsg_MeetingJoined_Connecting
+   * @description 2. Join success, "connecting" to meeting
+   */
+  const sendMsg_MeetingJoined_Connecting = () => {
+    const msg_2 = {
+      type: "event",
+      eventProps: {
+        message: "joinedZoom",
+        data: {
+          meetingNumber,
+          meetingStatus: "connecting",
+        },
+      },
+    };
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(msg_2));
+  };
 
+  /**
+   * @function sendMsg_MeetingJoined_Disconnected
+   * @description 3. Join success, "disconnected" to meeting
+   */
+  const sendMsg_MeetingJoined_Disconnected = () => {
+    const msg_3 = {
+      type: "event",
+      eventProps: {
+        message: "joinedZoom",
+        data: {
+          meetingNumber,
+          meetingStatus: "disconnected",
+        },
+      },
+    };
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(msg_3));
+  };
 
-    // const backTypeMsg = {
-    //   type: "back",
-    // };
+  /**
+   * @function sendMsg_MeetingJoined_Reconnecting
+   * @description 4. Join success, "reconnecting" to meeting
+   */
+  const sendMsg_MeetingJoined_Reconnecting = () => {
+    const msg_4 = {
+      type: "event",
+      eventProps: {
+        message: "joinedZoom",
+        data: {
+          meetingNumber,
+          meetingStatus: "reconnecting",
+        },
+      },
+    };
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(msg_4));
+  };
 
-    window?.ReactNativeWebView?.postMessage(JSON.stringify(screenTypeMsg));
+  /**
+   * @function sendMsg_MeetingJoined_Waiting
+   * @description  5. Join success, "waiting" in meeting room
+   */
+  const sendMsg_MeetingJoined_Waiting = () => {
+    const msg_5 = {
+      type: "event",
+      eventProps: {
+        message: "joinedZoom",
+        data: {
+          meetingNumber,
+          meetingStatus: "waiting",
+        },
+      },
+    };
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(msg_5));
+  };
+
+  /**
+   * @function sendMsg_MeetingJoin_Error
+   * @argument {String} errorMessage
+   * @description  6. join error, "error" in joining zoom meeting
+   * @description pass errorMessage from onError call back of ZoomMtg.join()
+   */
+  const sendMsg_MeetingJoin_Error = (errorMessage = "") => {
+    const msg_6 = {
+      type: "event",
+      eventProps: {
+        message: "errorZoom",
+        data: {
+          errorMessage,
+        },
+      },
+    };
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(msg_6));
+  };
+
+  /**
+   * @function sendMsg_MeetingLeave_Success
+   * @description  7. leave success, meeting ended
+   */
+  const sendMsg_MeetingLeave_Success = () => {
+    const msg_7 = {
+      type: "event",
+      eventProps: {
+        message: "leaveZoom",
+        data: {
+          endedBy: "user",
+        },
+      },
+    };
+    window?.ReactNativeWebView?.postMessage(JSON.stringify(msg_7));
   };
 
   /**
