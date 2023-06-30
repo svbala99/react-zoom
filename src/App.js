@@ -1,6 +1,6 @@
 import "./App.css";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { ZoomMtg } from "@zoomus/websdk";
 
@@ -17,6 +17,7 @@ ZoomMtg.i18n.reload("en-US");
  * @returns {JSX}
  */
 const App = () => {
+  const [data, setData] = useState(null);
   // handled at react web hosting side
   const sdkKey = process.env.REACT_APP_ZOOM_SDK_KEY_PROD;
   const role = 0;
@@ -24,10 +25,8 @@ const App = () => {
 
   // handled at react native side - would be passed from React native to React
   // you can delete these after you receive all these from react native
-  const meetingNumber = 99488065055;
-  const passWord = "imn6YJ";
-  const userName = "Test User";
-  const userEmail = "svbala99@gmail.com";
+  const userName = "User";
+  const userEmail = "user@cipla.com";
 
   /**
    * @async
@@ -36,10 +35,8 @@ const App = () => {
    * @description generates description by hitting the hosted git repo Express server
    * @description replace localhost 4000 with the URL where the Express server runs remotely
    */
-  const getSignature = async (event) => {
+  const getSignature = async (data = null) => {
     try {
-      event.preventDefault();
-
       // hit the remote experss server to retrieve signature
       // meetingNumber and role are must.
       // role 0 means attendee, 1 stands for host
@@ -49,7 +46,7 @@ const App = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            meetingNumber,
+            meetingNumber: data?.meetingNumber,
             role,
           }),
         }
@@ -58,7 +55,7 @@ const App = () => {
       // if signature is retrieved successfully, then attempt to start meeting
       const signatureJSON = await responseFromSignatureEndpoint.json();
       if (signatureJSON) {
-        startMeeting(signatureJSON?.signature);
+        startMeeting(signatureJSON?.signature, data);
       }
     } catch (error) {
       console.error(error);
@@ -70,9 +67,13 @@ const App = () => {
    * @param {String} signature
    * @description starts the zoom meeting
    */
-  const startMeeting = (signature = null) => {
+  const startMeeting = (signature = null, data) => {
     // in the HTML document, whichever div has zmmtg-root as ID, then overwrite its style prop by display : 'block'
     document.getElementById("zmmtg-root").style.display = "block";
+
+    if (!sdkKey || !signature) {
+      return;
+    }
 
     // make init() from zoomSDK
     // all fields are mandatory
@@ -82,16 +83,16 @@ const App = () => {
         ZoomMtg.join({
           signature,
           sdkKey,
-          meetingNumber,
-          passWord,
-          userName,
-          userEmail,
+          meetingNumber: data?.meetingNumber,
+          passWord: data?.passWord,
+          userName: data?.userName || userName,
+          userEmail: data?.userEmail || userEmail,
           // success: (success) => {
           //   console.log("============= Zoom join success",success)
           // },
           error: (errorMsg) => {
             sendMsg_MeetingJoin_Error(JSON.stringify(errorMsg));
-          }
+          },
         });
       },
       // error: (error) => {
@@ -100,14 +101,14 @@ const App = () => {
     });
   };
 
- // In Use effect()====>  if(e.data?.type="LEAVE_MEETING"){
-      //   ZoomMtg.leaveMeeting({
-      //     confirm:true,
-      //     success:()=>{
-      //       sendMsg_MeetingLeave_Success();
-      //     }
-      //   })
-      // }
+  // In Use effect()====>  if(e.data?.type="LEAVE_MEETING"){
+  //   ZoomMtg.leaveMeeting({
+  //     confirm:true,
+  //     success:()=>{
+  //       sendMsg_MeetingLeave_Success();
+  //     }
+  //   })
+  // }
 
   // (6) ==> ZoomMtg.join(
   // ...
@@ -132,14 +133,14 @@ const App = () => {
    * @function sendMsg_MeetingJoined_Connected
    * @description 1. Join success, "connected" to meeting
    */
-  const sendMsg_MeetingJoined_Connected = () => {
+  const sendMsg_MeetingJoined_Connected = (meetingData = null) => {
     const msg_1 = {
       type: "event",
-      key:1,
+      key: 1,
       eventProps: {
         message: "joinedZoom",
         data: {
-          meetingNumber,
+          meetingNumber: meetingData?.meetingNumber,
           meetingStatus: "connected",
         },
       },
@@ -151,14 +152,14 @@ const App = () => {
    * @function sendMsg_MeetingJoined_Connecting
    * @description 2. Join success, "connecting" to meeting
    */
-  const sendMsg_MeetingJoined_Connecting = () => {
+  const sendMsg_MeetingJoined_Connecting = (meetingData = null) => {
     const msg_2 = {
       type: "event",
-      key:2,
+      key: 2,
       eventProps: {
         message: "joinedZoom",
         data: {
-          meetingNumber,
+          meetingNumber: meetingData?.meetingNumber,
           meetingStatus: "connecting",
         },
       },
@@ -170,14 +171,14 @@ const App = () => {
    * @function sendMsg_MeetingJoined_Disconnected
    * @description 3. Join success, "disconnected" to meeting
    */
-  const sendMsg_MeetingJoined_Disconnected = () => {
+  const sendMsg_MeetingJoined_Disconnected = (meetingData = null) => {
     const msg_3 = {
       type: "event",
-      key:3,
+      key: 3,
       eventProps: {
         message: "joinedZoom",
         data: {
-          meetingNumber,
+          meetingNumber: meetingData?.meetingNumber,
           meetingStatus: "disconnected",
         },
       },
@@ -189,14 +190,14 @@ const App = () => {
    * @function sendMsg_MeetingJoined_Reconnecting
    * @description 4. Join success, "reconnecting" to meeting
    */
-  const sendMsg_MeetingJoined_Reconnecting = () => {
+  const sendMsg_MeetingJoined_Reconnecting = (meetingData = null) => {
     const msg_4 = {
       type: "event",
-      key:4,
+      key: 4,
       eventProps: {
         message: "joinedZoom",
         data: {
-          meetingNumber,
+          meetingNumber: meetingData?.meetingNumber,
           meetingStatus: "reconnecting",
         },
       },
@@ -211,11 +212,11 @@ const App = () => {
   const sendMsg_MeetingJoined_Waiting = () => {
     const msg_5 = {
       type: "event",
-      key:5,
+      key: 5,
       eventProps: {
         message: "joinedZoom",
         data: {
-          meetingNumber,
+          meetingNumber: meetingData?.meetingNumber,
           meetingStatus: "waiting",
         },
       },
@@ -232,7 +233,7 @@ const App = () => {
   const sendMsg_MeetingJoin_Error = (errorMessage = "") => {
     const msg_6 = {
       type: "event",
-      key:6,
+      key: 6,
       eventProps: {
         message: "errorZoom",
         data: {
@@ -250,7 +251,7 @@ const App = () => {
   const sendMsg_MeetingLeave_Success = () => {
     const msg_7 = {
       type: "event",
-      key:7,
+      key: 7,
       eventProps: {
         message: "leaveZoom",
         data: {
@@ -266,32 +267,51 @@ const App = () => {
    * @description to handle the listener to receive msg from React native
    * @description PWA developers can receive this e.data and utilize it wherever required
    */
+  let meetingData = null;
   useEffect(() => {
-    const messageListener = document.addEventListener("message", (e) => {
-      alert(JSON.stringify(e?.data));
-      if(e.data?.type="LEAVE_MEETING"){
+    document.addEventListener("message", (e) => {
+      if (e?.data?.type === "LEAVE_MEETING") {
         ZoomMtg.leaveMeeting({
-          confirm:true,
-          success:()=>{
+          confirm: true,
+          success: () => {
             sendMsg_MeetingLeave_Success();
-          }
-        })
+          },
+        });
+      }
+      getSignature(JSON.parse(e?.data));
+      meetingData = JSON.stringify(JSON.parse(e?.data));
+      setData(JSON.parse(e?.data));
+    });
+
+    ZoomMtg.inMeetingServiceListener("onMeetingStatus", (data) => {
+      // {status: 1(connecting), 2(connected), 3(disconnected), 4(reconnecting)}
+      const status = data?.meetingStatus || null;
+      if (status) {
+        switch (status) {
+          case 1:
+            sendMsg_MeetingJoined_Connecting(meetingData);
+            break;
+          case 2:
+            sendMsg_MeetingJoined_Connected(meetingData);
+            break;
+          case 3:
+            sendMsg_MeetingJoined_Disconnected(meetingData);
+            break;
+          case 4:
+            sendMsg_MeetingJoined_Reconnecting(meetingData);
+            break;
+          default:
+            break;
+        }
       }
     });
-    return messageListener;
+
+    ZoomMtg.inMeetingServiceListener("onUserIsInWaitingRoom", () => {
+      sendMsg_MeetingJoined_Waiting();
+    });
   }, []);
 
-  return (
-    <div className="App">
-      <main>
-        <h1>Zoom Meeting SDK Sample React</h1>
-        <button onClick={sendMessageToReactNative}>
-          Say Hi to React native
-        </button>
-        <button onClick={getSignature}>Join Meeting</button>
-      </main>
-    </div>
-  );
+  return <div className="App"></div>;
 };
 
 export default App;
