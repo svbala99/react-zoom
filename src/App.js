@@ -1,6 +1,6 @@
 import "./App.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { ZoomMtg } from "@zoomus/websdk";
 
@@ -17,7 +17,6 @@ ZoomMtg.i18n.reload("en-US");
  * @returns {JSX}
  */
 const App = () => {
-  const [data, setData] = useState(null);
   // handled at react web hosting side
   const sdkKey = process.env.REACT_APP_ZOOM_SDK_KEY_PROD;
   const role = 0;
@@ -280,7 +279,6 @@ const App = () => {
       }
       getSignature(JSON.parse(e?.data));
       meetingData = JSON.stringify(JSON.parse(e?.data));
-      setData(JSON.parse(e?.data));
     });
 
     ZoomMtg.inMeetingServiceListener("onMeetingStatus", (data) => {
